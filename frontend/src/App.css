@@ -240,6 +240,23 @@ h3 {
   line-height: 1.5;
 }
 
+.q-stem {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.25rem;
+}
+
+.q-scenario {
+  font-style: italic;
+  background: #f5f3ee;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+
 .q-hint {
   font-size: 0.85rem;
   color: var(--text-secondary);

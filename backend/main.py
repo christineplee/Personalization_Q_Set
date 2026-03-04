@@ -26,10 +26,10 @@ from questions import PROFILING_QUESTIONS, TASKS, EVALUATION_ITEMS
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-AZURE_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "https://synthesis-repair.openai.azure.com/")
-AZURE_API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "1ZkflbH2SPxykVVfRZItVpuX9UMs710MFZfXKtO40kGw5L6OCg9wJQQJ99BEACYeBjFXJ3w3AAABACOG7sX2")
+AZURE_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "https://YOUR-RESOURCE.openai.azure.com/")
+AZURE_API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
 AZURE_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
-AZURE_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-02-01")
+AZURE_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-10-21")
 DB_PATH = "data/study.db"
 SCHEDULES_PATH = "data/schedules.json"
 
@@ -135,7 +135,7 @@ def claim_next_schedule():
 # ── LLM ───────────────────────────────────────────────────────────────────────
 
 def get_llm_client():
-    if not AZURE_API_KEY or AZURE_API_KEY == "1ZkflbH2SPxykVVfRZItVpuX9UMs710MFZfXKtO40kGw5L6OCg9wJQQJ99BEACYeBjFXJ3w3AAABACOG7sX2":
+    if not AZURE_API_KEY or AZURE_API_KEY == "your-api-key-here":
         return None
     return AzureOpenAI(
         azure_endpoint=AZURE_ENDPOINT,
@@ -159,12 +159,24 @@ def build_system_prompt(profile_answers: dict, item_ids: list[str]) -> str:
         if answer is None:
             continue
 
-        if q["type"] == "likert7":
+        if q["type"] == "bipolar7":
+            left = q.get("left_anchor", "")
+            right = q.get("right_anchor", "")
+            profile_lines.append(
+                f"- Scenario: {q['text']} — On a scale from \"{left}\" (1) to \"{right}\" (7), "
+                f"this user chose: {answer}/7"
+            )
+        elif q["type"] == "likert7":
             anchors = q.get("anchors", ["1", "7"])
             profile_lines.append(f"- {q['text']} — Response: {answer}/7 ({anchors[0]} to {anchors[1]})")
         elif q["type"] == "likert6":
             anchors = q.get("anchors", ["1", "6"])
             profile_lines.append(f"- {q['text']} — Response: {answer}/6 ({anchors[0]} to {anchors[1]})")
+        elif q["type"] == "likert5":
+            anchors = q.get("anchors", ["1", "5"])
+            stem = q.get("stem", "")
+            display_text = f"{stem} {q['text']}" if stem else q["text"]
+            profile_lines.append(f"- \"{display_text}\" — Response: {answer}/5 ({anchors[0]} to {anchors[1]})")
         elif q["type"] == "forced_choice":
             if isinstance(answer, int) and "options" in q:
                 answer_text = q["options"][answer] if answer < len(q["options"]) else str(answer)

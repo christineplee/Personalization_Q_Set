@@ -1,556 +1,319 @@
 """
-Contains the 48 profiling questions, the 8 tasks, and the 5 evaluation items
 Profiling question set for the Minimal Personalization Study.
-~50 items spanning 6 tiers of user information.
+80 items across 3 sections:
+  Section 1: Dimension Vignettes (20 bipolar 7-point items)
+  Section 2: Projective Proxies (12 forced-choice items)
+  Section 3: Personality Instruments (18 PI-18 + 30 BFI-2-S = 48 items)
 """
 
 PROFILING_QUESTIONS = [
-    # ======================================================
-    # TIER 1: Validated Psychological Instruments
-    # ======================================================
+    # ==============================================================
+    # SECTION 1: DIMENSION VIGNETTES
+    # All items use a 7-point bipolar scale.
+    # ==============================================================
 
-    # Big Five - TIPI (Ten Item Personality Inventory, Gosling et al. 2003)
+    # ── 1.1 Tone (T1–T5) ─────────────────────────────────────────
     {
-        "id": "tipi_1",
-        "tier": "psychological",
-        "instrument": "TIPI",
-        "text": "I see myself as extraverted, enthusiastic.",
-        "type": "likert7",
-        "anchors": ["Disagree strongly", "Agree strongly"],
+        "id": "t1", "tier": "dimension_tone", "section": "vignettes", "dimension": "tone",
+        "text": "You ask AI to review a cover letter or help you prepare for an interview for a job you really want.",
+        "type": "bipolar7",
+        "left_anchor": "Reassuring and supportive",
+        "right_anchor": "Brutally honest about weaknesses",
     },
     {
-        "id": "tipi_2",
-        "tier": "psychological",
-        "instrument": "TIPI",
-        "text": "I see myself as critical, quarrelsome.",
-        "type": "likert7",
-        "anchors": ["Disagree strongly", "Agree strongly"],
+        "id": "t2", "tier": "dimension_tone", "section": "vignettes", "dimension": "tone",
+        "text": "You're feeling stressed and mention it to the AI while asking for help with a task.",
+        "type": "bipolar7",
+        "left_anchor": "Acknowledges how I'm feeling before diving into the task",
+        "right_anchor": "Skips the emotional stuff and jumps straight into helping",
     },
     {
-        "id": "tipi_3",
-        "tier": "psychological",
-        "instrument": "TIPI",
-        "text": "I see myself as dependable, self-disciplined.",
-        "type": "likert7",
-        "anchors": ["Disagree strongly", "Agree strongly"],
+        "id": "t3", "tier": "dimension_tone", "section": "vignettes", "dimension": "tone",
+        "text": "You're using AI for a work task you will share with colleagues at work.",
+        "type": "bipolar7",
+        "left_anchor": "Casual and conversational, like talking to a coworker",
+        "right_anchor": "Polished and professional throughout",
     },
     {
-        "id": "tipi_4",
-        "tier": "psychological",
-        "instrument": "TIPI",
-        "text": "I see myself as anxious, easily upset.",
-        "type": "likert7",
-        "anchors": ["Disagree strongly", "Agree strongly"],
+        "id": "t4", "tier": "dimension_tone", "section": "vignettes", "dimension": "tone",
+        "text": "You ask the AI to explain a technical topic that's completely outside your area of expertise.",
+        "type": "bipolar7",
+        "left_anchor": "Patient and encouraging, checking in along the way",
+        "right_anchor": "Straightforward and efficient, no hand-holding",
     },
     {
-        "id": "tipi_5",
-        "tier": "psychological",
-        "instrument": "TIPI",
-        "text": "I see myself as open to new experiences, complex.",
-        "type": "likert7",
-        "anchors": ["Disagree strongly", "Agree strongly"],
-    },
-    {
-        "id": "tipi_6",
-        "tier": "psychological",
-        "instrument": "TIPI",
-        "text": "I see myself as reserved, quiet.",
-        "type": "likert7",
-        "anchors": ["Disagree strongly", "Agree strongly"],
-    },
-    {
-        "id": "tipi_7",
-        "tier": "psychological",
-        "instrument": "TIPI",
-        "text": "I see myself as sympathetic, warm.",
-        "type": "likert7",
-        "anchors": ["Disagree strongly", "Agree strongly"],
-    },
-    {
-        "id": "tipi_8",
-        "tier": "psychological",
-        "instrument": "TIPI",
-        "text": "I see myself as disorganized, careless.",
-        "type": "likert7",
-        "anchors": ["Disagree strongly", "Agree strongly"],
-    },
-    {
-        "id": "tipi_9",
-        "tier": "psychological",
-        "instrument": "TIPI",
-        "text": "I see myself as calm, emotionally stable.",
-        "type": "likert7",
-        "anchors": ["Disagree strongly", "Agree strongly"],
-    },
-    {
-        "id": "tipi_10",
-        "tier": "psychological",
-        "instrument": "TIPI",
-        "text": "I see myself as conventional, uncreative.",
-        "type": "likert7",
-        "anchors": ["Disagree strongly", "Agree strongly"],
+        "id": "t5", "tier": "dimension_tone", "section": "vignettes", "dimension": "tone",
+        "text": "You ask the AI to help you plan an event with many moving parts (venue, guest list, catering, timeline).",
+        "type": "bipolar7",
+        "left_anchor": "Collaborative and chatty, like brainstorming with a friend",
+        "right_anchor": "Systematic and no-nonsense",
     },
 
-    # Primals (PI-18 short form, Clifton et al. 2019)
+    # ── 1.2 Verbosity (V1–V5) ────────────────────────────────────
     {
-        "id": "primal_good",
-        "tier": "psychological",
-        "instrument": "Primals",
-        "text": "In general, the world is a good place.",
-        "type": "likert6",
-        "anchors": ["Strongly disagree", "Strongly agree"],
+        "id": "v1", "tier": "dimension_verbosity", "section": "vignettes", "dimension": "verbosity",
+        "text": "You ask the AI to explain the potential side effects of a medication your doctor prescribed.",
+        "type": "bipolar7",
+        "left_anchor": "Just the key points, what I most need to know",
+        "right_anchor": "Comprehensive and thorough, cover everything including rare risks",
     },
     {
-        "id": "primal_safe",
-        "tier": "psychological",
-        "instrument": "Primals",
-        "text": "The world is a safe place.",
-        "type": "likert6",
-        "anchors": ["Strongly disagree", "Strongly agree"],
+        "id": "v2", "tier": "dimension_verbosity", "section": "vignettes", "dimension": "verbosity",
+        "text": "You ask the AI to explain a process that involves many interconnected steps.",
+        "type": "bipolar7",
+        "left_anchor": "High-level overview first, I'll ask for more if I need it",
+        "right_anchor": "Detailed walkthrough of every step from the start",
     },
     {
-        "id": "primal_interesting",
-        "tier": "psychological",
-        "instrument": "Primals",
-        "text": "The world is an interesting place.",
-        "type": "likert6",
-        "anchors": ["Strongly disagree", "Strongly agree"],
+        "id": "v3", "tier": "dimension_verbosity", "section": "vignettes", "dimension": "verbosity",
+        "text": "You're using the AI to prepare talking points for a presentation to senior leadership.",
+        "type": "bipolar7",
+        "left_anchor": "Crisp and concise, just the key messages",
+        "right_anchor": "Rich with supporting detail and context I can draw from",
     },
     {
-        "id": "primal_alive",
-        "tier": "psychological",
-        "instrument": "Primals",
-        "text": "The world is full of things that are alive and conscious.",
-        "type": "likert6",
-        "anchors": ["Strongly disagree", "Strongly agree"],
-    },
-
-    # Need for Cognition (short, 3 items from Cacioppo & Petty 1982)
-    {
-        "id": "nfc_1",
-        "tier": "psychological",
-        "instrument": "NFC",
-        "text": "I prefer complex to simple problems.",
-        "type": "likert7",
-        "anchors": ["Very strongly disagree", "Very strongly agree"],
+        "id": "v4", "tier": "dimension_verbosity", "section": "vignettes", "dimension": "verbosity",
+        "text": "You ask the AI about a legal situation you're personally dealing with.",
+        "type": "bipolar7",
+        "left_anchor": "Brief and focused, just the essentials",
+        "right_anchor": "Thorough \u2014 covering nuances, exceptions, and implications",
     },
     {
-        "id": "nfc_2",
-        "tier": "psychological",
-        "instrument": "NFC",
-        "text": "I like to have the responsibility of handling a situation that requires a lot of thinking.",
-        "type": "likert7",
-        "anchors": ["Very strongly disagree", "Very strongly agree"],
-    },
-    {
-        "id": "nfc_3",
-        "tier": "psychological",
-        "instrument": "NFC",
-        "text": "Thinking is not my idea of fun.",
-        "type": "likert7",
-        "anchors": ["Very strongly disagree", "Very strongly agree"],
+        "id": "v5", "tier": "dimension_verbosity", "section": "vignettes", "dimension": "verbosity",
+        "text": "You're learning to use a new software tool and ask the AI how a specific feature works.",
+        "type": "bipolar7",
+        "left_anchor": "Short, simple explanation to get me started",
+        "right_anchor": "In-depth explanation with background context and examples",
     },
 
-    # Regulatory Focus (2 items)
+    # ── 1.3 Structure (S1–S5) ────────────────────────────────────
     {
-        "id": "regfocus_promo",
-        "tier": "psychological",
-        "instrument": "RegFocus",
-        "text": "I frequently imagine how I will achieve my hopes and aspirations.",
-        "type": "likert7",
-        "anchors": ["Never or seldom", "Very often"],
+        "id": "s1", "tier": "dimension_structure", "section": "vignettes", "dimension": "structure",
+        "text": "You ask the AI to help you compare options for a major financial decision (e.g., mortgage, investment).",
+        "type": "bipolar7",
+        "left_anchor": "Organized comparison with clear categories and side-by-side layout",
+        "right_anchor": "Conversational walkthrough of the pros and cons",
     },
     {
-        "id": "regfocus_prevent",
-        "tier": "psychological",
-        "instrument": "RegFocus",
-        "text": "I am anxious that I will fall short of my responsibilities and obligations.",
-        "type": "likert7",
-        "anchors": ["Never or seldom", "Very often"],
-    },
-
-    # MBTI-style preference (4 forced choice items)
-    {
-        "id": "mbti_ei",
-        "tier": "psychological",
-        "instrument": "MBTI",
-        "text": "When you need to recharge, do you prefer:",
-        "type": "forced_choice",
-        "options": ["Spending time with others", "Spending time alone"],
+        "id": "s2", "tier": "dimension_structure", "section": "vignettes", "dimension": "structure",
+        "text": "You ask the AI to summarize a complicated situation involving multiple people, events, and factors.",
+        "type": "bipolar7",
+        "left_anchor": "Organized with clear sections separating each element",
+        "right_anchor": "Flowing narrative that tells the story in connected prose",
     },
     {
-        "id": "mbti_sn",
-        "tier": "psychological",
-        "instrument": "MBTI",
-        "text": "When learning something new, do you focus more on:",
-        "type": "forced_choice",
-        "options": ["The specific facts and details", "The big picture and possibilities"],
+        "id": "s3", "tier": "dimension_structure", "section": "vignettes", "dimension": "structure",
+        "text": "You're using the AI to create content that colleagues or clients will read.",
+        "type": "bipolar7",
+        "left_anchor": "Well-formatted with headers, sections, and visual organization",
+        "right_anchor": "Natural, readable prose without heavy formatting",
     },
     {
-        "id": "mbti_tf",
-        "tier": "psychological",
-        "instrument": "MBTI",
-        "text": "When making decisions, do you tend to rely more on:",
-        "type": "forced_choice",
-        "options": ["Logic and objective analysis", "Personal values and how others feel"],
+        "id": "s4", "tier": "dimension_structure", "section": "vignettes", "dimension": "structure",
+        "text": "You ask the AI for guidance on how to navigate a difficult conversation with a family member.",
+        "type": "bipolar7",
+        "left_anchor": "Organized as clear steps or options to consider",
+        "right_anchor": "Flowing, conversational response in natural paragraphs",
     },
     {
-        "id": "mbti_jp",
-        "tier": "psychological",
-        "instrument": "MBTI",
-        "text": "In your daily life, do you prefer:",
-        "type": "forced_choice",
-        "options": ["Having things planned and settled", "Keeping things open and flexible"],
+        "id": "s5", "tier": "dimension_structure", "section": "vignettes", "dimension": "structure",
+        "text": "You're researching an unfamiliar professional field and ask the AI to bring you up to speed.",
+        "type": "bipolar7",
+        "left_anchor": "Structured outline progressing from fundamentals to advanced topics",
+        "right_anchor": "Conversational explanation that builds my understanding organically",
     },
 
-    # ======================================================
-    # TIER 2: Lifestyle & Identity Proxy Questions
-    # ======================================================
+    # ── 1.4 Initiative (I1–I5) ───────────────────────────────────
     {
-        "id": "life_morning",
-        "tier": "lifestyle",
-        "text": "What best describes your morning routine?",
-        "type": "forced_choice",
-        "options": [
-            "Structured — same routine every day",
-            "Loose — general pattern but flexible",
-            "Improvised — different every day",
-        ],
+        "id": "i1", "tier": "dimension_initiative", "section": "vignettes", "dimension": "initiative",
+        "text": "You ask the AI to help you draft an important email to a client.",
+        "type": "bipolar7",
+        "left_anchor": "Suggests improvements and flags potential issues I didn't mention",
+        "right_anchor": "Writes exactly what I asked for, nothing more",
     },
     {
-        "id": "life_manual",
-        "tier": "lifestyle",
-        "text": "When you buy something that requires assembly, do you:",
-        "type": "forced_choice",
-        "options": [
-            "Read the manual first, then assemble",
-            "Glance at the manual, mostly figure it out",
-            "Dive right in, consult the manual only if stuck",
-        ],
+        "id": "i2", "tier": "dimension_initiative", "section": "vignettes", "dimension": "initiative",
+        "text": "You describe a problem to the AI that could be approached in several different ways.",
+        "type": "bipolar7",
+        "left_anchor": "Explores multiple approaches and recommends one",
+        "right_anchor": "Addresses only the specific approach I described",
     },
     {
-        "id": "life_phone",
-        "tier": "lifestyle",
-        "text": "How would you describe your phone's home screen?",
-        "type": "forced_choice",
-        "options": [
-            "Carefully organized into folders and groups",
-            "Somewhat organized, a few apps on the main screen",
-            "A bit chaotic — apps wherever they land",
-        ],
+        "id": "i3", "tier": "dimension_initiative", "section": "vignettes", "dimension": "initiative",
+        "text": "You're contributing to a group project and ask the AI for help with your section.",
+        "type": "bipolar7",
+        "left_anchor": "Points out how my section connects to the broader project and flags inconsistencies",
+        "right_anchor": "Focuses only on the specific section I asked about",
     },
     {
-        "id": "life_restaurant",
-        "tier": "lifestyle",
-        "text": "At a new restaurant, how do you typically order?",
-        "type": "forced_choice",
-        "options": [
-            "I already know what I want before I sit down",
-            "I ask the server what they recommend",
-            "I study the full menu carefully before deciding",
-        ],
+        "id": "i4", "tier": "dimension_initiative", "section": "vignettes", "dimension": "initiative",
+        "text": "You ask the AI for advice about your personal financial situation.",
+        "type": "bipolar7",
+        "left_anchor": "Flags related concerns or opportunities I might not have thought of",
+        "right_anchor": "Only addresses what I specifically asked about",
     },
     {
-        "id": "life_desk",
-        "tier": "lifestyle",
-        "text": "How would you describe your desk or workspace right now?",
-        "type": "forced_choice",
-        "options": [
-            "Clean and minimal",
-            "Organized but full — everything has a place",
-            "Cluttered but I know where things are",
-            "Honestly, a mess",
-        ],
-    },
-    {
-        "id": "life_seat",
-        "tier": "lifestyle",
-        "text": "On a flight, do you prefer:",
-        "type": "forced_choice",
-        "options": ["Window seat", "Aisle seat", "No preference"],
-    },
-    {
-        "id": "life_pet",
-        "tier": "lifestyle",
-        "text": "Are you more of a:",
-        "type": "forced_choice",
-        "options": ["Dog person", "Cat person", "Both equally", "Neither"],
-    },
-    {
-        "id": "life_media",
-        "tier": "lifestyle",
-        "text": "What genre do you gravitate toward in books, podcasts, or shows?",
-        "type": "forced_choice",
-        "options": [
-            "Nonfiction / educational",
-            "Mystery / thriller",
-            "Comedy / humor",
-            "Drama / character-driven stories",
-            "Science fiction / fantasy",
-        ],
+        "id": "i5", "tier": "dimension_initiative", "section": "vignettes", "dimension": "initiative",
+        "text": "You're new to a hobby and ask the AI a specific beginner question.",
+        "type": "bipolar7",
+        "left_anchor": "Answers my question and suggests what to explore or learn next",
+        "right_anchor": "Just answers my question, clearly and simply",
     },
 
-    # ======================================================
-    # TIER 3: Perceptual & Projective Tasks
-    # ======================================================
+    # ==============================================================
+    # SECTION 2: PROJECTIVE PROXIES (P1–P12)
+    # Forced choice between two options.
+    # ==============================================================
     {
-        "id": "percept_email",
-        "tier": "perceptual",
-        "text": "You need to email a colleague about rescheduling a meeting. Which version would you send?",
+        "id": "p1", "tier": "projective", "section": "projective",
+        "text": "Which bothers you more?",
         "type": "forced_choice",
-        "options": [
-            "Hi! Hope you're having a great week. I was wondering if we could possibly move our meeting to Thursday? Totally understand if that doesn't work — just let me know what's best for you!",
-            "Hi — can we move our meeting to Thursday? Let me know.",
-        ],
+        "options": ["Someone who's kind but a bit incompetent", "Someone who's blunt but gets things done well"],
     },
     {
-        "id": "percept_scenario",
-        "tier": "perceptual",
-        "text": "Your friend asks you to plan a group weekend trip. What do you do?",
+        "id": "p2", "tier": "projective", "section": "projective",
+        "text": "Which are you more drawn to?",
         "type": "forced_choice",
-        "options": [
-            "Propose a full itinerary with options",
-            "Suggest a few ideas and let the group decide",
-            "Say 'I'm happy with anything — you pick!'",
-        ],
+        "options": ["Cooking \u2014 improvise, taste, adjust", "Baking \u2014 measure precisely, follow the recipe"],
     },
     {
-        "id": "percept_llm_pref",
-        "tier": "perceptual",
-        "text": "You ask an AI: 'Should I learn Python or JavaScript first?' Which response do you prefer?",
+        "id": "p3", "tier": "projective", "section": "projective",
+        "text": "You're lost in an unfamiliar city. Which companion do you prefer?",
         "type": "forced_choice",
-        "options": [
-            "Learn Python first. It's more versatile for beginners, has cleaner syntax, and opens doors to data science, automation, and AI. Start with an online tutorial and build a small project within your first week.",
-            "It depends on your goals. Python is great for data science, automation, and general-purpose programming. JavaScript is essential if you're interested in web development. Could you tell me more about what you'd like to build?",
-        ],
+        "options": ["Someone who takes the lead and suggests detours to cool spots", "Someone who waits for you to decide, then helps you get there"],
     },
     {
-        "id": "percept_ambiguity",
-        "tier": "perceptual",
-        "text": "When someone gives you advice that could be interpreted multiple ways, do you usually:",
+        "id": "p4", "tier": "projective", "section": "projective",
+        "text": "A friend recommends a movie to you. What do you prefer to hear?",
         "type": "forced_choice",
-        "options": [
-            "Pick the most likely interpretation and go with it",
-            "Ask for clarification before proceeding",
-            "Consider multiple interpretations and act on the safest one",
-        ],
+        "options": ["\"Trust me, just watch it\"", "A full explanation of why they think you'd like it"],
+    },
+    {
+        "id": "p5", "tier": "projective", "section": "projective",
+        "text": "When someone pitches you an idea, what do you want to hear first?",
+        "type": "forced_choice",
+        "options": ["The concrete details \u2014 how it works, what it costs, what the steps are", "The big vision \u2014 what it could become and why it matters"],
+    },
+    {
+        "id": "p6", "tier": "projective", "section": "projective",
+        "text": "When explaining your point of view on something, you tend to:",
+        "type": "forced_choice",
+        "options": ["Give the big picture and let them ask if they need details", "Walk through it step by step so nothing gets missed"],
+    },
+    {
+        "id": "p7", "tier": "projective", "section": "projective",
+        "text": "At a restaurant with a group that can't decide what to order, you tend to:",
+        "type": "forced_choice",
+        "options": ["Let the conversation play out naturally", "Suggest a plan \u2014 \"let's each pick two dishes and share\""],
+    },
+    {
+        "id": "p8", "tier": "projective", "section": "projective",
+        "text": "When you hear about a news event, you tend to:",
+        "type": "forced_choice",
+        "options": ["Accept the headline and move on", "Dig into multiple sources to understand the full picture"],
+    },
+    {
+        "id": "p9", "tier": "projective", "section": "projective",
+        "text": "Starting a new project, you prefer to:",
+        "type": "forced_choice",
+        "options": ["Figure it out as you go \u2014 the shape will emerge", "Define the scope and plan before doing anything"],
+    },
+    {
+        "id": "p10", "tier": "projective", "section": "projective",
+        "text": "A friend is upset about a bad day. Your instinct is:",
+        "type": "forced_choice",
+        "options": ["Listen and validate how they're feeling", "Help them figure out what to do about it"],
+    },
+    {
+        "id": "p11", "tier": "projective", "section": "projective",
+        "text": "What type of game appeals to you more?",
+        "type": "forced_choice",
+        "options": ["One with clear strategy where you can find optimal moves", "One with open-ended play where you create your own story"],
+    },
+    {
+        "id": "p12", "tier": "projective", "section": "projective",
+        "text": "If you could have someone around all day, you'd want someone who:",
+        "type": "forced_choice",
+        "options": ["Makes you better at what you do", "Makes what you do easier"],
     },
 
-    # ======================================================
-    # TIER 4: Behavioral Micro-Tasks
-    # ======================================================
-    {
-        "id": "behav_describe_day",
-        "tier": "behavioral",
-        "text": "In 2-3 sentences, describe what you did yesterday.",
-        "type": "free_text",
-    },
-    {
-        "id": "behav_topic_rank",
-        "tier": "behavioral",
-        "text": "Rank these topics by how interesting they are to you (most to least):",
-        "type": "ranking",
-        "options": [
-            "Technology & Innovation",
-            "Health & Wellness",
-            "History & Culture",
-            "Money & Finance",
-            "Relationships & Social Life",
-            "Nature & Environment",
-            "Art & Creativity",
-            "Science & Discovery",
-        ],
-    },
+    # ==============================================================
+    # SECTION 3: PERSONALITY INSTRUMENTS
+    # ==============================================================
 
-    # ======================================================
-    # TIER 5: Values & Trade-Off Questions
-    # ======================================================
-    {
-        "id": "value_advice_style",
-        "tier": "values",
-        "text": "When getting advice, would you rather:",
-        "type": "forced_choice",
-        "options": [
-            "Hear all the options with pros and cons",
-            "Just get the best recommendation",
-        ],
-    },
-    {
-        "id": "value_ai_mistake",
-        "tier": "values",
-        "text": "If an AI assistant made a mistake, would you rather it:",
-        "type": "forced_choice",
-        "options": [
-            "Explain what went wrong and why",
-            "Just fix it and move on",
-        ],
-    },
-    {
-        "id": "value_speed_accuracy",
-        "tier": "values",
-        "text": "Would you rather receive:",
-        "type": "forced_choice",
-        "options": [
-            "A good-enough answer right now",
-            "A more precise answer that takes longer to think through",
-        ],
-    },
-    {
-        "id": "value_learn_format",
-        "tier": "values",
-        "text": "You have 5 minutes to learn about a topic you know nothing about. You'd prefer:",
-        "type": "forced_choice",
-        "options": [
-            "A concise summary",
-            "A story or real-world example",
-            "A diagram or visual",
-            "A back-and-forth conversation",
-        ],
-    },
-    {
-        "id": "value_honest_kind",
-        "tier": "values",
-        "text": "If you had to choose, is it more important to be:",
-        "type": "forced_choice",
-        "options": ["Honest", "Kind"],
-    },
-    {
-        "id": "value_certainty",
-        "tier": "values",
-        "text": "When someone is helping you make a decision, you prefer them to:",
-        "type": "forced_choice",
-        "options": [
-            "Give a confident recommendation even if they're not 100% sure",
-            "Share their uncertainty and let you weigh the options",
-        ],
-    },
+    # ── 3.1 Primal World Beliefs — PI-18 (Clifton et al. 2019) ───
+    # 6-point scale: 1=Strongly Disagree → 6=Strongly Agree
+    {"id": "pi_1",  "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "In life, there's way more beauty than ugliness.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_2",  "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "It often feels like events are happening in order to help me in some way.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_3",  "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "I tend to see the world as pretty safe.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_4",  "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "What happens in the world is meant to happen.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_5",  "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "While some things are worth checking out or exploring further, most things probably aren't worth the effort.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_6",  "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "Most things in life are kind of boring.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_7",  "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "The world is an abundant place with tons and tons to offer.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_8",  "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "No matter where we are or what the topic might be, the world is fascinating.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_9",  "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "The world is a somewhat dull place where plenty of things are not that interesting.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_10", "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "On the whole, the world is a dangerous place.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_11", "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "Instead of being cooperative, the world is a cut-throat and competitive place.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_12", "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "Events seem to lack any cosmic or bigger purpose.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_13", "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "Most things have a habit of getting worse.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_14", "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "The universe needs me for something important.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_15", "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "Most things in the world are good.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_16", "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "Everything happens for a reason and on purpose.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_17", "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "Most things and situations are harmless and totally safe.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
+    {"id": "pi_18", "tier": "primals", "section": "primals", "instrument": "PI-18", "type": "likert6", "text": "No matter where we are, incredible beauty is always around us.", "anchors": ["Strongly Disagree", "Strongly Agree"]},
 
-    # ======================================================
-    # TIER 6: Controversial / Identity Signal Questions
-    # ======================================================
-    {
-        "id": "identity_political",
-        "tier": "identity",
-        "text": "Where would you place yourself on the political spectrum?",
-        "type": "likert7",
-        "anchors": ["Very liberal/progressive", "Very conservative"],
-    },
-    {
-        "id": "identity_spiritual",
-        "tier": "identity",
-        "text": "Which best describes your relationship to religion or spirituality?",
-        "type": "forced_choice",
-        "options": [
-            "Actively religious/practicing",
-            "Spiritual but not religious",
-            "Not particularly spiritual or religious",
-            "Atheist or agnostic",
-        ],
-    },
-    {
-        "id": "identity_trust",
-        "tier": "identity",
-        "text": "Generally speaking, do you think most people can be trusted?",
-        "type": "forced_choice",
-        "options": [
-            "Most people can be trusted",
-            "You need to be careful with people",
-        ],
-    },
-    {
-        "id": "identity_change",
-        "tier": "identity",
-        "text": "Which statement resonates more with you?",
-        "type": "forced_choice",
-        "options": [
-            "The world is generally getting better over time",
-            "The world is generally getting worse over time",
-        ],
-    },
-    {
-        "id": "identity_vehicle",
-        "tier": "identity",
-        "text": "If you had to choose one vehicle regardless of cost, which would you pick?",
-        "type": "forced_choice",
-        "options": [
-            "Electric sedan (e.g., Tesla)",
-            "Pickup truck (e.g., F-150)",
-            "SUV (e.g., RAV4)",
-            "Compact/hybrid (e.g., Prius)",
-            "Luxury car (e.g., BMW)",
-        ],
-    },
+    # ── 3.2 Big Five — BFI-2-S (Soto & John 2017) ───────────────
+    # 5-point scale: 1=Disagree Strongly → 5=Agree Strongly
+    # Stem: "I am someone who..."
+    {"id": "bfi_1",  "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Tends to be quiet.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_2",  "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is compassionate, has a soft heart.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_3",  "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Tends to be disorganized.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_4",  "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Worries a lot.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_5",  "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is fascinated by art, music, or literature.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_6",  "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is dominant, acts as a leader.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_7",  "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is sometimes rude to others.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_8",  "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Has difficulty getting started on tasks.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_9",  "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Tends to feel depressed, blue.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_10", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Has little interest in abstract ideas.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_11", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is full of energy.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_12", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Assumes the best about people.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_13", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is reliable, can always be counted on.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_14", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is emotionally stable, not easily upset.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_15", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is original, comes up with new ideas.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_16", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is outgoing, sociable.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_17", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Can be cold and uncaring.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_18", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Keeps things neat and tidy.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_19", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is relaxed, handles stress well.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_20", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Has few artistic interests.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_21", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Prefers to have others take charge.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_22", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is respectful, treats others with respect.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_23", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is persistent, works until the task is finished.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_24", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Feels secure, comfortable with self.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_25", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is complex, a deep thinker.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_26", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is less active than other people.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_27", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Tends to find fault with others.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_28", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Can be somewhat careless.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_29", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Is temperamental, gets emotional easily.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
+    {"id": "bfi_30", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Has little creativity.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
 ]
 
-# Total: 50 items
+# Total: 80 items (20 vignettes + 12 projective + 18 primals + 30 BFI)
 
 TASKS = [
-    {
-        "id": "task_advice",
-        "category": "advice_seeking",
-        "prompt": "I've been thinking about switching careers to something more creative, but I'm worried about financial stability. What should I consider?",
-    },
-    {
-        "id": "task_explain",
-        "category": "explanation",
-        "prompt": "Can you explain how compound interest works and why people say it's so powerful?",
-    },
-    {
-        "id": "task_emotional",
-        "category": "emotional",
-        "prompt": "I had a really frustrating day at work — I kept sharing ideas in a meeting and they were either ignored or someone else got credit for them. What do you think I should do?",
-    },
-    {
-        "id": "task_planning",
-        "category": "planning",
-        "prompt": "I want to start eating healthier but I'm busy and not a great cook. Can you help me plan meals for the week?",
-    },
-    {
-        "id": "task_creative",
-        "category": "creative",
-        "prompt": "I need to write a thank-you note to a mentor who really shaped my career trajectory. Can you help me draft something?",
-    },
-    {
-        "id": "task_recommendation",
-        "category": "recommendation",
-        "prompt": "I want to understand economics better but I find most textbooks dry. What would you recommend?",
-    },
-    {
-        "id": "task_howto",
-        "category": "technical",
-        "prompt": "My kitchen faucet has been dripping and it's driving me crazy. How do I fix a leaky faucet?",
-    },
-    {
-        "id": "task_ambiguous",
-        "category": "value_laden",
-        "prompt": "I'm trying to decide whether to rent or buy a home. What are your thoughts?",
-    },
+    {"id": "task_advice", "category": "advice_seeking", "prompt": "I've been thinking about switching careers to something more creative, but I'm worried about financial stability. What should I consider?"},
+    {"id": "task_explain", "category": "explanation", "prompt": "Can you explain how compound interest works and why people say it's so powerful?"},
+    {"id": "task_emotional", "category": "emotional", "prompt": "I had a really frustrating day at work \u2014 I kept sharing ideas in a meeting and they were either ignored or someone else got credit for them. What do you think I should do?"},
+    {"id": "task_planning", "category": "planning", "prompt": "I want to start eating healthier but I'm busy and not a great cook. Can you help me plan meals for the week?"},
+    {"id": "task_creative", "category": "creative", "prompt": "I need to write a thank-you note to a mentor who really shaped my career trajectory. Can you help me draft something?"},
+    {"id": "task_recommendation", "category": "recommendation", "prompt": "I want to understand economics better but I find most textbooks dry. What would you recommend?"},
+    {"id": "task_howto", "category": "technical", "prompt": "My kitchen faucet has been dripping and it's driving me crazy. How do I fix a leaky faucet?"},
+    {"id": "task_ambiguous", "category": "value_laden", "prompt": "I'm trying to decide whether to rent or buy a home. What are your thoughts?"},
 ]
 
 EVALUATION_ITEMS = [
-    {
-        "id": "eval_content",
-        "text": "This response focused on what mattered to me.",
-        "dimension": "content",
-    },
-    {
-        "id": "eval_tone",
-        "text": "The way this was communicated felt right for me.",
-        "dimension": "tone",
-    },
-    {
-        "id": "eval_amount",
-        "text": "The level of detail was right for me.",
-        "dimension": "amount",
-    },
-    {
-        "id": "eval_agency",
-        "text": "The level of initiative the assistant took felt right for me.",
-        "dimension": "agency",
-    },
-    {
-        "id": "eval_overall",
-        "text": "This response felt like it was written for me.",
-        "dimension": "overall",
-    },
+    {"id": "eval_content", "text": "This response focused on what mattered to me.", "dimension": "content"},
+    {"id": "eval_tone", "text": "The way this was communicated felt right for me.", "dimension": "tone"},
+    {"id": "eval_amount", "text": "The level of detail was right for me.", "dimension": "amount"},
+    {"id": "eval_agency", "text": "The level of initiative the assistant took felt right for me.", "dimension": "agency"},
+    {"id": "eval_overall", "text": "This response felt like it was written for me.", "dimension": "overall"},
 ]

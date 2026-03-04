@@ -33,7 +33,7 @@ function Welcome({ onStart }) {
           <div className="info-box">
             <strong>What to expect:</strong>
             <ul>
-              <li>Part 1: Answer questions about your preferences and personality (~15 min)</li>
+              <li>Part 1: Answer questions about your preferences and personality (~20 min)</li>
               <li>Part 2: Read and evaluate 8 AI-generated responses (~20 min)</li>
               <li>Part 3: A few final reflection questions (~3 min)</li>
             </ul>
@@ -54,18 +54,66 @@ function Welcome({ onStart }) {
 // ── Phase: Profiling ─────────────────────────────────────────────────────────
 
 const TIER_LABELS = {
-  psychological: 'About You',
-  lifestyle: 'Daily Life & Preferences',
-  perceptual: 'Scenarios & Choices',
-  behavioral: 'Quick Activities',
-  values: 'Values & Trade-offs',
-  identity: 'Perspectives',
+  dimension_tone: 'Tone Preferences',
+  dimension_verbosity: 'Detail Preferences',
+  dimension_structure: 'Structure Preferences',
+  dimension_initiative: 'Initiative Preferences',
+  projective: 'Scenarios & Choices',
+  primals: 'World Beliefs',
+  bigfive: 'Personality',
 };
 
-const TIER_ORDER = ['psychological', 'lifestyle', 'perceptual', 'behavioral', 'values', 'identity'];
+const TIER_ORDER = ['dimension_tone', 'dimension_verbosity', 'dimension_structure', 'dimension_initiative', 'projective', 'primals', 'bigfive'];
 
 function QuestionRenderer({ question, value, onChange }) {
   const { id, type, text, options, anchors } = question;
+
+  if (type === 'bipolar7') {
+    return (
+      <div className="question">
+        <p className="q-text q-scenario">{text}</p>
+        <div className="likert-row">
+          <span className="anchor left">{question.left_anchor}</span>
+          <div className="likert-buttons">
+            {[1, 2, 3, 4, 5, 6, 7].map((v) => (
+              <button
+                key={v}
+                className={`likert-btn ${value === v ? 'selected' : ''}`}
+                onClick={() => onChange(id, v)}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+          <span className="anchor right">{question.right_anchor}</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (type === 'likert5') {
+    return (
+      <div className="question">
+        {question.stem && <p className="q-stem">{question.stem}</p>}
+        <p className="q-text">{text}</p>
+        <div className="likert-row">
+          <span className="anchor left">{anchors?.[0]}</span>
+          <div className="likert-buttons">
+            {[1, 2, 3, 4, 5].map((v) => (
+              <button
+                key={v}
+                className={`likert-btn ${value === v ? 'selected' : ''}`}
+                onClick={() => onChange(id, v)}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+          <span className="anchor right">{anchors?.[1]}</span>
+        </div>
+      </div>
+    );
+  }
 
   if (type === 'likert7' || type === 'likert6') {
     const max = type === 'likert7' ? 7 : 6;
@@ -185,6 +233,7 @@ function Profiling({ questions, onSubmit }) {
   const tierComplete = currentTierQuestions.every((q) => {
     const val = answers[q.id];
     if (q.type === 'ranking') return val && val.length === q.options.length;
+    if (q.type === 'forced_choice') return val !== undefined;
     return val !== undefined && val !== '';
   });
 
@@ -195,6 +244,7 @@ function Profiling({ questions, onSubmit }) {
   const totalAnswered = questions.filter((q) => {
     const v = answers[q.id];
     if (q.type === 'ranking') return v && v.length === q.options?.length;
+    if (q.type === 'forced_choice') return v !== undefined;
     return v !== undefined && v !== '';
   }).length;
 
