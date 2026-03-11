@@ -297,7 +297,86 @@ PROFILING_QUESTIONS = [
     {"id": "bfi_30", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Has little creativity.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
 ]
 
-# Total: 80 items (20 vignettes + 12 projective + 18 primals + 30 BFI)
+# Total: 80 profiling items (20 vignettes + 12 projective + 18 primals + 30 BFI)
+
+# ── Attention Checks ──────────────────────────────────────────────
+# These are inserted into the profiling flow but NEVER included in
+# schedule subsets or LLM prompts. They are used to flag inattentive
+# participants for potential exclusion.
+
+ATTENTION_CHECKS = [
+    {
+        "id": "attn_vignette",
+        "tier": "dimension_verbosity",
+        "section": "vignettes",
+        "type": "bipolar7",
+        "text": "This is an attention check. Please select 2 on the scale below.",
+        "left_anchor": "Left option",
+        "right_anchor": "Right option",
+        "is_attention_check": True,
+        "expected_answer": 2,
+        "insert_after": "v3",
+    },
+    {
+        "id": "attn_projective",
+        "tier": "projective",
+        "section": "projective",
+        "type": "forced_choice",
+        "text": "This is an attention check. Please select the second option.",
+        "options": ["Do not select this option", "Select this option"],
+        "is_attention_check": True,
+        "expected_answer": 1,
+        "insert_after": "p6",
+    },
+    {
+        "id": "attn_primals",
+        "tier": "primals",
+        "section": "primals",
+        "type": "likert6",
+        "text": "To make sure you are reading carefully, please select Strongly Disagree (1) for this item.",
+        "anchors": ["Strongly Disagree", "Strongly Agree"],
+        "is_attention_check": True,
+        "expected_answer": 1,
+        "insert_after": "pi_9",
+    },
+    {
+        "id": "attn_eval_1",
+        "type": "eval_attention",
+        "text": "This is an attention check. Please select 2 on the scale below.",
+        "is_attention_check": True,
+        "expected_answer": 2,
+        "in_task": 1,
+    },
+    {
+        "id": "attn_eval_2",
+        "type": "eval_attention",
+        "text": "Please read carefully and select 6 for this item.",
+        "is_attention_check": True,
+        "expected_answer": 6,
+        "in_task": 4,
+    },
+    {
+        "id": "attn_eval_3",
+        "type": "eval_attention",
+        "text": "To confirm you are paying attention, please select 1 below.",
+        "is_attention_check": True,
+        "expected_answer": 1,
+        "in_task": 6,
+    },
+]
+
+def get_profiling_questions_with_attention_checks():
+    """Return profiling questions with attention checks inserted at specified positions."""
+    questions = list(PROFILING_QUESTIONS)
+    # Insert attention checks after their specified anchor items
+    profiling_checks = [ac for ac in ATTENTION_CHECKS if ac.get("insert_after")]
+    for check in reversed(profiling_checks):  # reverse to preserve insertion indices
+        anchor = check["insert_after"]
+        for i, q in enumerate(questions):
+            if q["id"] == anchor:
+                questions.insert(i + 1, check)
+                break
+    return questions
 
 TASKS = [
     {"id": "task_advice", "category": "advice_seeking", "prompt": "I've been thinking about switching careers to something more creative, but I'm worried about financial stability. What should I consider?"},
@@ -311,9 +390,9 @@ TASKS = [
 ]
 
 EVALUATION_ITEMS = [
-    {"id": "eval_content", "text": "This response focused on what mattered to me.", "dimension": "content"},
-    {"id": "eval_tone", "text": "The way this was communicated felt right for me.", "dimension": "tone"},
-    {"id": "eval_amount", "text": "The level of detail was right for me.", "dimension": "amount"},
-    {"id": "eval_agency", "text": "The level of initiative the assistant took felt right for me.", "dimension": "agency"},
-    {"id": "eval_overall", "text": "This response felt like it was written for me.", "dimension": "overall"},
+    {"id": "eval_tone", "text": "The tone of this response felt right for me \u2014 not too casual, not too formal, not too warm or too cold.", "dimension": "tone"},
+    {"id": "eval_verbosity", "text": "The amount of detail was right for me \u2014 not too brief, not too lengthy.", "dimension": "verbosity"},
+    {"id": "eval_structure", "text": "The way the response was organized worked for me \u2014 whether it used lists, paragraphs, sections, or flowing prose.", "dimension": "structure"},
+    {"id": "eval_initiative", "text": "The assistant took the right level of initiative \u2014 it didn't overreach, but it also didn't hold back when I would have wanted more.", "dimension": "initiative"},
+    {"id": "eval_overall", "text": "Overall, this response felt like it was written for someone like me.", "dimension": "overall"},
 ]
