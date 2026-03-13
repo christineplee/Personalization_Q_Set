@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Personalization_Q_Set/static/css/main.3ccfe561.css",
+    "main.js": "/Personalization_Q_Set/static/js/main.b44c7f1a.js",
+    "index.html": "/Personalization_Q_Set/index.html",
+    "main.3ccfe561.css.map": "/Personalization_Q_Set/static/css/main.3ccfe561.css.map",
+    "main.b44c7f1a.js.map": "/Personalization_Q_Set/static/js/main.b44c7f1a.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3ccfe561.css",
+    "static/js/main.b44c7f1a.js"
+  ]
+}
