@@ -522,15 +522,18 @@ def study_status():
         "schedules_remaining": 200 - claimed,
     }
 
-#@app.post("/api/admin/free-incomplete")
-#def free_incomplete():
-#    """Free schedules claimed by incomplete sessions."""
-#    with get_db() as conn:
-#        incomplete = conn.execute(
-#            "SELECT session_id, schedule_id, status FROM sessions WHERE status != 'complete'"
-#        ).fetchall()
-#        freed = 0
-#        for s in incomplete:
-#            conn.execute("UPDATE schedule_claims SET claimed = 0 WHERE schedule_id = ?", (s['schedule_id'],))
-#            freed += 1
-#    return {"freed": freed, "schedule_ids": [s['schedule_id'] for s in incomplete]}
+@app.post("/api/admin/free-incomplete")
+def free_incomplete():
+    """Free schedules claimed by sessions older than 2 hours that aren't complete."""
+    from datetime import timedelta
+    cutoff = (datetime.utcnow() - timedelta(hours=2)).isoformat()
+    with get_db() as conn:
+        incomplete = conn.execute(
+            "SELECT session_id, schedule_id, status, created_at FROM sessions WHERE status != 'complete' AND created_at < ?",
+            (cutoff,)
+        ).fetchall()
+        freed = 0
+        for s in incomplete:
+            conn.execute("UPDATE schedule_claims SET claimed = 0 WHERE schedule_id = ?", (s['schedule_id'],))
+            freed += 1
+    return {"freed": freed}
