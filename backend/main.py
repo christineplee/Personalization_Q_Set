@@ -522,14 +522,15 @@ def study_status():
         "schedules_remaining": 200 - claimed,
     }
 
-#@app.post("/api/admin/reset")
-#def reset_study():
-#    with get_db() as conn:
-#        conn.executescript("""
-#            DELETE FROM sessions;
-#            DELETE FROM responses;
-#            DELETE FROM evaluations;
-#            DELETE FROM attention_checks;
-#            UPDATE schedule_claims SET claimed = 0;
-#        """)
-#    return {"status": "reset complete"}
+@app.post("/api/admin/free-incomplete")
+def free_incomplete():
+    """Free schedules claimed by incomplete sessions."""
+    with get_db() as conn:
+        incomplete = conn.execute(
+            "SELECT session_id, schedule_id, status FROM sessions WHERE status != 'complete'"
+        ).fetchall()
+        freed = 0
+        for s in incomplete:
+            conn.execute("UPDATE schedule_claims SET claimed = 0 WHERE schedule_id = ?", (s['schedule_id'],))
+            freed += 1
+    return {"freed": freed, "schedule_ids": [s['schedule_id'] for s in incomplete]}
