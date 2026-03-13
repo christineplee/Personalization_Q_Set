@@ -521,3 +521,15 @@ def study_status():
         "schedules_claimed": claimed,
         "schedules_remaining": 200 - claimed,
     }
+
+@app.post("/api/admin/reset")
+def reset_study():
+    with get_db() as conn:
+        conn.executescript("""
+            DELETE FROM sessions;
+            DELETE FROM responses;
+            DELETE FROM evaluations;
+            DELETE FROM attention_checks;
+            UPDATE schedule_claims SET claimed = 0;
+        """)
+    return {"status": "reset complete"}
