@@ -166,7 +166,7 @@ PROFILING_QUESTIONS = [
     # ==============================================================
     {
         "id": "p1", "tier": "projective", "section": "projective",
-        "text": "Which bothers you more?",
+        "text": "Who do you prefer?",
         "type": "forced_choice",
         "options": ["Someone who's kind but a bit incompetent", "Someone who's blunt but gets things done well"],
     },
@@ -297,7 +297,18 @@ PROFILING_QUESTIONS = [
     {"id": "bfi_30", "tier": "bigfive", "section": "bigfive", "instrument": "BFI-2-S", "type": "likert5", "stem": "I am someone who...", "text": "Has little creativity.", "anchors": ["Disagree Strongly", "Agree Strongly"]},
 ]
 
-# Total: 80 profiling items (20 vignettes + 12 projective + 18 primals + 30 BFI)
+# Total: 80 items (20 vignettes + 12 projective + 18 primals + 30 BFI)
+
+TASKS = [
+    {"id": "task_advice", "category": "advice_seeking", "prompt": "I have a friend who I feel like has been pulling away lately. I don't know if I did something wrong or if they're just going through their own stuff. How should I handle this?"},
+    {"id": "task_explain", "category": "explanation", "prompt": "I always feel tired even when I get a full night's sleep. Why does that happen, and what can I actually do about it?"},
+    {"id": "task_emotional", "category": "emotional", "prompt": "I had a really frustrating day at work \u2014 I kept sharing ideas in a meeting and they were either ignored or someone else got credit for them. What do you think I should do?"},
+    {"id": "task_planning", "category": "planning", "prompt": "I want to start eating healthier but I'm busy and not a great cook. Can you help me plan meals for the week?"},
+    {"id": "task_creative", "category": "creative", "prompt": "I need to write a thank-you message to someone who really helped me through a tough time. Can you help me figure out what to say?"},
+    {"id": "task_recommendation", "category": "recommendation", "prompt": "I want to pick up a new hobby but I have no idea where to start. I've got a few hours a week and a modest budget. Any suggestions?"},
+    {"id": "task_howto", "category": "technical", "prompt": "I have to give a short presentation at work next week and I'm nervous about public speaking. How should I prepare?"},
+    {"id": "task_ambiguous", "category": "value_laden", "prompt": "I've been feeling like I have no work-life balance lately. Everything blurs together and I'm always either working or thinking about work. How do people actually deal with this?"},
+]
 
 # ── Attention Checks ──────────────────────────────────────────────
 # These are inserted into the profiling flow but NEVER included in
@@ -368,26 +379,14 @@ ATTENTION_CHECKS = [
 def get_profiling_questions_with_attention_checks():
     """Return profiling questions with attention checks inserted at specified positions."""
     questions = list(PROFILING_QUESTIONS)
-    # Insert attention checks after their specified anchor items
     profiling_checks = [ac for ac in ATTENTION_CHECKS if ac.get("insert_after")]
-    for check in reversed(profiling_checks):  # reverse to preserve insertion indices
+    for check in reversed(profiling_checks):
         anchor = check["insert_after"]
         for i, q in enumerate(questions):
             if q["id"] == anchor:
                 questions.insert(i + 1, check)
                 break
     return questions
-
-TASKS = [
-    {"id": "task_advice", "category": "advice_seeking", "prompt": "I've been thinking about switching careers to something more creative, but I'm worried about financial stability. What should I consider?"},
-    {"id": "task_explain", "category": "explanation", "prompt": "Can you explain how compound interest works and why people say it's so powerful?"},
-    {"id": "task_emotional", "category": "emotional", "prompt": "I had a really frustrating day at work \u2014 I kept sharing ideas in a meeting and they were either ignored or someone else got credit for them. What do you think I should do?"},
-    {"id": "task_planning", "category": "planning", "prompt": "I want to start eating healthier but I'm busy and not a great cook. Can you help me plan meals for the week?"},
-    {"id": "task_creative", "category": "creative", "prompt": "I need to write a thank-you note to a mentor who really shaped my career trajectory. Can you help me draft something?"},
-    {"id": "task_recommendation", "category": "recommendation", "prompt": "I want to understand economics better but I find most textbooks dry. What would you recommend?"},
-    {"id": "task_howto", "category": "technical", "prompt": "My kitchen faucet has been dripping and it's driving me crazy. How do I fix a leaky faucet?"},
-    {"id": "task_ambiguous", "category": "value_laden", "prompt": "I'm trying to decide whether to rent or buy a home. What are your thoughts?"},
-]
 
 EVALUATION_ITEMS = [
     {"id": "eval_tone", "text": "The tone of this response felt right for me \u2014 not too casual, not too formal, not too warm or too cold.", "dimension": "tone"},

@@ -14,6 +14,26 @@ async function api(path, options = {}) {
   return res.json();
 }
 
+// Simple markdown to HTML renderer
+function renderMarkdown(text) {
+  if (!text) return '';
+  let html = text
+    .replace(/^### \*?\*?(.*?)\*?\*?\s*$/gm, '<h3>$1</h3>')
+    .replace(/^## \*?\*?(.*?)\*?\*?\s*$/gm, '<h2>$1</h2>')
+    .replace(/^# \*?\*?(.*?)\*?\*?\s*$/gm, '<h1>$1</h1>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/^- (.*$)/gm, '<li>$1</li>')
+    .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br/>');
+  html = html.replace(/((?:<li>.*?<\/li>\s*(?:<br\/>)?)+)/g, '<ul>$1</ul>');
+  html = html.replace(/<ul>(.*?)<\/ul>/gs, (match, inner) =>
+    '<ul>' + inner.replace(/<br\/>/g, '') + '</ul>'
+  );
+  return '<p>' + html + '</p>';
+}
+
 // ── Phase: Welcome ───────────────────────────────────────────────────────────
 
 function Welcome({ onStart }) {
@@ -28,14 +48,14 @@ function Welcome({ onStart }) {
           <p>
             In this study, you'll answer questions about yourself, then interact
             with an AI assistant that uses your answers to personalize its
-            responses. You'll evaluate how well each response fits you.
+            responses. You'll evaluate how well each response fits your preferences.
           </p>
           <div className="info-box">
             <strong>What to expect:</strong>
             <ul>
-              <li>Part 1: Answer questions about your preferences and personality (~20 min)</li>
-              <li>Part 2: Read and evaluate 8 AI-generated responses (~20 min)</li>
-              <li>Part 3: A few final reflection questions (~3 min)</li>
+              <li>Part 1: Answer questions about your preferences and personality </li>
+              <li>Part 2: Read and evaluate 8 AI-generated responses </li>
+              <li>Part 3: Answer a few final reflection questions </li>
             </ul>
           </div>
           <p className="note">
@@ -65,6 +85,16 @@ const TIER_LABELS = {
 
 const TIER_ORDER = ['dimension_tone', 'dimension_verbosity', 'dimension_structure', 'dimension_initiative', 'projective', 'primals', 'bigfive'];
 
+const TIER_INSTRUCTIONS = {
+  dimension_tone: 'For each scenario, imagine you are interacting with an AI assistant. The two descriptions represent different styles the AI could use. Choose where your preference falls on the scale.',
+  dimension_verbosity: 'For each scenario, the two sides represent different levels of detail the AI could provide. Choose where your preference falls.',
+  dimension_structure: 'For each scenario, the two sides represent different ways the AI could organize its response. Choose where your preference falls.',
+  dimension_initiative: 'For each scenario, the two sides represent different levels of initiative the AI could take. Choose where your preference falls.',
+  projective: 'For each question, choose the option that feels more like you. There are no right or wrong answers \u2014 go with your gut.',
+  primals: 'Rate how much you agree or disagree with each statement about the world.',
+  bigfive: 'Rate how well each statement describes you as a person.',
+};
+
 function QuestionRenderer({ question, value, onChange }) {
   const { id, type, text, options, anchors } = question;
 
@@ -72,8 +102,17 @@ function QuestionRenderer({ question, value, onChange }) {
     return (
       <div className="question">
         <p className="q-text q-scenario">{text}</p>
-        <div className="likert-row">
-          <span className="anchor left">{question.left_anchor}</span>
+        <div className="bipolar-poles">
+          <div className={`pole pole-left ${value && value <= 3 ? 'pole-active' : ''}`}>
+            <span className="pole-arrow">←</span>
+            <span className="pole-label">{question.left_anchor}</span>
+          </div>
+          <div className={`pole pole-right ${value && value >= 5 ? 'pole-active' : ''}`}>
+            <span className="pole-label">{question.right_anchor}</span>
+            <span className="pole-arrow">→</span>
+          </div>
+        </div>
+        <div className="bipolar-scale">
           <div className="likert-buttons">
             {[1, 2, 3, 4, 5, 6, 7].map((v) => (
               <button
@@ -85,7 +124,6 @@ function QuestionRenderer({ question, value, onChange }) {
               </button>
             ))}
           </div>
-          <span className="anchor right">{question.right_anchor}</span>
         </div>
       </div>
     );
@@ -140,6 +178,29 @@ function QuestionRenderer({ question, value, onChange }) {
   }
 
   if (type === 'forced_choice') {
+    const isTwoOptions = options.length === 2;
+    if (isTwoOptions) {
+      return (
+        <div className="question">
+          <p className="q-text">{text}</p>
+          <div className="choice-versus">
+            <button
+              className={`choice-card ${value === 0 ? 'selected' : ''}`}
+              onClick={() => onChange(id, 0)}
+            >
+              {options[0]}
+            </button>
+            <div className="choice-or">or</div>
+            <button
+              className={`choice-card ${value === 1 ? 'selected' : ''}`}
+              onClick={() => onChange(id, 1)}
+            >
+              {options[1]}
+            </button>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="question">
         <p className="q-text">{text}</p>
@@ -267,6 +328,9 @@ function Profiling({ questions, onSubmit }) {
         </div>
 
         <h2>{TIER_LABELS[tiers[currentTier]]}</h2>
+        {TIER_INSTRUCTIONS[tiers[currentTier]] && (
+          <p className="tier-instructions">{TIER_INSTRUCTIONS[tiers[currentTier]]}</p>
+        )}
         <p className="tier-progress">
           {totalAnswered} of {questions.length} questions answered
         </p>
@@ -320,7 +384,7 @@ function Buffer({ message }) {
         <div className="spinner" />
         <h2>Preparing Your Session</h2>
         <p>{message || 'Generating personalized responses based on your profile...'}</p>
-        <p className="note">This usually takes 30–60 seconds.</p>
+        <p className="note">This usually takes 2–3 minutes.</p>
       </div>
     </div>
   );
@@ -328,16 +392,20 @@ function Buffer({ message }) {
 
 // ── Phase: Task Evaluation ───────────────────────────────────────────────────
 
-function TaskEvaluation({ tasks, onSubmitEval, onComplete }) {
+function TaskEvaluation({ tasks, sessionId, evalAttentionChecks, onSubmitEval, onAttnCheckFailed, onComplete }) {
   const [currentTask, setCurrentTask] = useState(0);
   const [ratings, setRatings] = useState({});
+  const [relevance, setRelevance] = useState(null);
   const [openEnded, setOpenEnded] = useState('');
   const [submitted, setSubmitted] = useState(new Set());
 
   const task = tasks[currentTask];
-  const allRated = ['content', 'tone', 'amount', 'agency', 'overall'].every(
-    (d) => ratings[d] !== undefined
-  );
+  const currentAttnCheck = evalAttentionChecks?.[String(currentTask)] || null;
+
+  const evalDims = ['tone', 'verbosity', 'structure', 'initiative', 'overall'];
+  const allRated = evalDims.every((d) => ratings[d] !== undefined) &&
+    relevance !== null &&
+    (!currentAttnCheck || ratings['_attn'] !== undefined);
 
   const handleRate = (dim, val) => {
     setRatings((prev) => ({ ...prev, [dim]: val }));
@@ -346,19 +414,42 @@ function TaskEvaluation({ tasks, onSubmitEval, onComplete }) {
   const handleSubmit = async () => {
     await onSubmitEval({
       task_id: task.task_id,
-      eval_content: ratings.content,
       eval_tone: ratings.tone,
-      eval_amount: ratings.amount,
-      eval_agency: ratings.agency,
+      eval_verbosity: ratings.verbosity,
+      eval_structure: ratings.structure,
+      eval_initiative: ratings.initiative,
       eval_overall: ratings.overall,
+      eval_relevance: relevance,
       open_ended: openEnded,
     });
+
+    // Submit attention check if this task had one
+    if (currentAttnCheck && ratings['_attn'] !== undefined) {
+      try {
+        await api('/api/attention-check/submit', {
+          method: 'POST',
+          body: JSON.stringify({
+            session_id: sessionId,
+            check_id: currentAttnCheck.id,
+            expected: currentAttnCheck.expected_answer,
+            actual: ratings['_attn'],
+          }),
+        });
+      } catch (err) {
+        console.error('Failed to submit attention check:', err);
+      }
+      // Notify parent if check was failed (parent terminates at 3 failures)
+      if (ratings['_attn'] !== currentAttnCheck.expected_answer) {
+        onAttnCheckFailed();
+      }
+    }
 
     setSubmitted((prev) => new Set(prev).add(currentTask));
 
     if (currentTask < tasks.length - 1) {
       setCurrentTask((p) => p + 1);
       setRatings({});
+      setRelevance(null);
       setOpenEnded('');
       window.scrollTo(0, 0);
     } else {
@@ -367,12 +458,22 @@ function TaskEvaluation({ tasks, onSubmitEval, onComplete }) {
   };
 
   const evalLabels = {
-    content: 'This response focused on what mattered to me.',
-    tone: 'The way this was communicated felt right for me.',
-    amount: 'The level of detail was right for me.',
-    agency: 'The level of initiative the assistant took felt right for me.',
-    overall: 'This response felt like it was written for me.',
+    tone: 'The tone of this response felt right for me \u2014 not too casual, not too formal, not too warm or too cold.',
+    verbosity: 'The amount of detail was right for me \u2014 not too brief, not too lengthy.',
+    structure: 'The way the response was organized worked for me \u2014 whether it used lists, paragraphs, sections, or flowing prose.',
+    initiative: 'The assistant took the right level of initiative \u2014 it didn\'t overreach, but it also didn\'t hold back when I would have wanted more.',
+    overall: 'Overall, this response felt like it was written for someone like me.',
   };
+
+  // Build eval items, inserting attention check after the 2nd item if applicable
+  const evalEntries = Object.entries(evalLabels);
+  const evalItems = [];
+  evalEntries.forEach(([dim, label], idx) => {
+    evalItems.push({ key: dim, label, isAttn: false });
+    if (idx === 1 && currentAttnCheck) {
+      evalItems.push({ key: '_attn', label: currentAttnCheck.text, isAttn: true });
+    }
+  });
 
   return (
     <div className="phase evaluation">
@@ -390,16 +491,35 @@ function TaskEvaluation({ tasks, onSubmitEval, onComplete }) {
 
           <div className="task-response">
             <span className="label">AI Response:</span>
-            <div className="response-text">{task.response}</div>
+            <div className="response-text" dangerouslySetInnerHTML={{ __html: renderMarkdown(task.response) }} />
           </div>
         </div>
 
         <div className="eval-section">
+          <div className="eval-item relevance-item">
+            <p className="eval-label">How relevant is this topic to you personally?</p>
+            <div className="likert-row compact">
+              <span className="anchor left">Not at all</span>
+              <div className="likert-buttons">
+                {[1, 2, 3, 4, 5, 6, 7].map((v) => (
+                  <button
+                    key={v}
+                    className={`likert-btn ${relevance === v ? 'selected' : ''}`}
+                    onClick={() => setRelevance(v)}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
+              <span className="anchor right">Very relevant</span>
+            </div>
+          </div>
+
           <h3>How well did this response fit you?</h3>
           <p className="eval-instructions">Rate each statement from 1 (Strongly Disagree) to 7 (Strongly Agree)</p>
 
-          {Object.entries(evalLabels).map(([dim, label]) => (
-            <div key={dim} className="eval-item">
+          {evalItems.map(({ key, label }) => (
+            <div key={key} className="eval-item">
               <p className="eval-label">{label}</p>
               <div className="likert-row compact">
                 <span className="anchor left">Disagree</span>
@@ -407,8 +527,8 @@ function TaskEvaluation({ tasks, onSubmitEval, onComplete }) {
                   {[1, 2, 3, 4, 5, 6, 7].map((v) => (
                     <button
                       key={v}
-                      className={`likert-btn ${ratings[dim] === v ? 'selected' : ''}`}
-                      onClick={() => handleRate(dim, v)}
+                      className={`likert-btn ${ratings[key] === v ? 'selected' : ''}`}
+                      onClick={() => handleRate(key, v)}
                     >
                       {v}
                     </button>
@@ -437,7 +557,7 @@ function TaskEvaluation({ tasks, onSubmitEval, onComplete }) {
             disabled={!allRated}
             onClick={handleSubmit}
           >
-            {currentTask < tasks.length - 1 ? 'Next Task →' : 'Finish Evaluation'}
+            {currentTask < tasks.length - 1 ? 'Next Task \u2192' : 'Finish Evaluation'}
           </button>
         </div>
       </div>
@@ -456,7 +576,7 @@ function PostStudy({ onSubmit }) {
     what_wrong: '',
   });
 
-  const dims = ['Content (what it talked about)', 'Tone (how it communicated)', 'Amount of detail', 'Level of initiative'];
+  const dims = ['Tone (warmth, formality, directness)', 'Verbosity (level of detail)', 'Structure (how it was organized)', 'Initiative (how proactive it was)'];
   const unranked = dims.filter((d) => !data.dimension_rank.includes(d));
 
   const complete = data.overall_quality !== null && data.prefer_personalized !== null && data.dimension_rank.length === 4;
@@ -563,7 +683,7 @@ function PostStudy({ onSubmit }) {
 
 // ── Phase: Thank You ─────────────────────────────────────────────────────────
 
-function ThankYou({ sessionId }) {
+function ThankYou({ sessionId, prolificRedirectUrl }) {
   return (
     <div className="phase thank-you">
       <div className="card">
@@ -578,6 +698,11 @@ function ThankYou({ sessionId }) {
           communication. Your data will help us understand what an AI needs to
           know about a person to communicate more effectively.
         </p>
+        {prolificRedirectUrl && (
+          <a className="btn primary" href={prolificRedirectUrl} style={{ marginTop: '1.5rem', display: 'inline-block', textDecoration: 'none' }}>
+            Complete Study on Prolific
+          </a>
+        )}
       </div>
     </div>
   );
@@ -586,22 +711,35 @@ function ThankYou({ sessionId }) {
 // ── Main App ─────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const [phase, setPhase] = useState('welcome'); // welcome | profiling | buffer | evaluation | post_study | done
+  const [phase, setPhase] = useState('welcome'); // welcome | profiling | buffer | evaluation | post_study | done | terminated
   const [sessionId, setSessionId] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [evalAttentionChecks, setEvalAttentionChecks] = useState({});
+  const [failedAttnCount, setFailedAttnCount] = useState(0);
+  const [prolificRedirectUrl, setProlificRedirectUrl] = useState('');
   const [error, setError] = useState(null);
   const [bufferMessage, setBufferMessage] = useState('');
 
   // Load questions on mount
   useEffect(() => {
-    api('/api/questions').then((data) => setQuestions(data.questions)).catch(console.error);
+    api('/api/questions').then((data) => {
+      setQuestions(data.questions);
+      if (data.eval_attention_checks) setEvalAttentionChecks(data.eval_attention_checks);
+    }).catch(console.error);
   }, []);
 
   const handleStart = async () => {
     try {
-      const session = await api('/api/session/create', { method: 'POST' });
+      const params = new URLSearchParams(window.location.search);
+      const prolificPid = params.get('PROLIFIC_PID');
+
+      const session = await api('/api/session/create', {
+        method: 'POST',
+        body: JSON.stringify({ prolific_pid: prolificPid }),
+      });
       setSessionId(session.session_id);
+      if (session.prolific_redirect_url) setProlificRedirectUrl(session.prolific_redirect_url);
       setPhase('profiling');
     } catch (err) {
       setError('Failed to create session. Please try again.');
@@ -609,6 +747,20 @@ export default function App() {
   };
 
   const handleProfilingSubmit = async (answers) => {
+    // Check profiling attention checks before proceeding
+    const profilingAttnChecks = questions.filter((q) => q.is_attention_check && q.insert_after);
+    let failures = 0;
+    profilingAttnChecks.forEach((ac) => {
+      const actual = answers[ac.id];
+      if (actual !== ac.expected_answer) failures++;
+    });
+
+    setFailedAttnCount(failures);
+    if (failures >= 3) {
+      setPhase('terminated');
+      return;
+    }
+
     setPhase('buffer');
     setBufferMessage('Generating personalized responses based on your profile...');
     try {
@@ -622,6 +774,16 @@ export default function App() {
       setError('Failed to generate responses. Please try again.');
       setPhase('profiling');
     }
+  };
+
+  const handleAttnCheckFailed = () => {
+    setFailedAttnCount((prev) => {
+      const newCount = prev + 1;
+      if (newCount >= 3) {
+        setPhase('terminated');
+      }
+      return newCount;
+    });
   };
 
   const handleEvalSubmit = async (evalData) => {
@@ -675,12 +837,32 @@ export default function App() {
       {phase === 'evaluation' && tasks.length > 0 && (
         <TaskEvaluation
           tasks={tasks}
+          sessionId={sessionId}
+          evalAttentionChecks={evalAttentionChecks}
           onSubmitEval={handleEvalSubmit}
+          onAttnCheckFailed={handleAttnCheckFailed}
           onComplete={handleEvalComplete}
         />
       )}
       {phase === 'post_study' && <PostStudy onSubmit={handlePostStudy} />}
-      {phase === 'done' && <ThankYou sessionId={sessionId} />}
+      {phase === 'done' && <ThankYou sessionId={sessionId} prolificRedirectUrl={prolificRedirectUrl} />}
+      {phase === 'terminated' && (
+        <div className="phase thank-you">
+          <div className="card">
+            <h1>Study Ended</h1>
+            <p>
+              Unfortunately, we were unable to verify that responses were being
+              provided attentively, so the study has been ended. We appreciate
+              your time.
+            </p>
+            {sessionId && (
+              <div className="info-box">
+                <p><strong>Session ID:</strong> {sessionId}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

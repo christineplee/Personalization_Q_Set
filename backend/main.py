@@ -30,15 +30,16 @@ AZURE_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "https://YOUR-RESOURCE.opena
 AZURE_API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
 AZURE_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
 AZURE_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-10-21")
-DB_PATH = "data/study.db"
-SCHEDULES_PATH = "data/schedules.json"
+DB_PATH = os.getenv("DB_PATH", "data/study.db")
+SCHEDULES_PATH = os.getenv("SCHEDULES_PATH", "data/schedules.json")
+PROLIFIC_REDIRECT_URL = os.getenv("PROLIFIC_REDIRECT_URL", "")
 
 # ── App ───────────────────────────────────────────────────────────────────────
 
 app = FastAPI(title="Minimal Personalization Study")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=os.getenv("ALLOWED_ORIGINS", "*").split(","),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -57,7 +58,8 @@ def init_db():
                 status TEXT DEFAULT 'profiling',
                 task_order TEXT,
                 profiling_data TEXT,
-                post_study_data TEXT
+                post_study_data TEXT,
+                prolific_pid TEXT
             );
 
             CREATE TABLE IF NOT EXISTS responses (
@@ -81,9 +83,15 @@ def init_db():
                 eval_structure INTEGER,
                 eval_initiative INTEGER,
                 eval_overall INTEGER,
+                eval_relevance INTEGER,
                 open_ended TEXT,
                 created_at TEXT NOT NULL,
                 FOREIGN KEY (session_id) REFERENCES sessions(session_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS schedule_claims (
+                schedule_id INTEGER PRIMARY KEY,
+                claimed INTEGER DEFAULT 0
             );
 
             CREATE TABLE IF NOT EXISTS attention_checks (
@@ -95,11 +103,6 @@ def init_db():
                 passed INTEGER NOT NULL,
                 created_at TEXT NOT NULL,
                 FOREIGN KEY (session_id) REFERENCES sessions(session_id)
-            );
-
-            CREATE TABLE IF NOT EXISTS schedule_claims (
-                schedule_id INTEGER PRIMARY KEY,
-                claimed INTEGER DEFAULT 0
             );
         """)
 
@@ -222,18 +225,17 @@ adapt your response along four dimensions:
    prose. Match their preference.
 
 4. INITIATIVE: How proactive should you be? Some users want you to anticipate 
-   needs, suggest or even implement next steps, and flag things they haven't asked about. Others 
+   needs, suggest next steps, and flag things they haven't asked about. Others 
    want you to answer exactly what was asked and nothing more.
 
 USER PROFILE:
 {profile_section}
 
-IMPORTANT: Make strong, clear, distinct adaptations based on this profile. Two users with 
+IMPORTANT: Make strong, clear adaptations based on this profile. Two users with 
 different profiles should receive noticeably different responses to the same 
 question. Do not default to a generic middle-ground style. Do not mention that 
 you have this profile information or refer to it explicitly.
 """
-    
     return system_prompt
 
 
@@ -271,6 +273,7 @@ class EvaluationSubmission(BaseModel):
     eval_structure: int
     eval_initiative: int
     eval_overall: int
+    eval_relevance: int
     open_ended: str = ""
 
 
@@ -284,6 +287,10 @@ class AttentionCheckSubmission(BaseModel):
     check_id: str
     expected: int
     actual: int
+
+
+class CreateSessionRequest(BaseModel):
+    prolific_pid: Optional[str] = None
 
 
 # ── API Routes ────────────────────────────────────────────────────────────────
@@ -305,7 +312,7 @@ def startup():
 @app.get("/api/questions")
 def get_questions():
     """Return profiling questions with attention checks inserted."""
-    eval_attn_checks = {ac["in_task"]: ac for ac in ATTENTION_CHECKS if ac.get("in_task") is not None}
+    eval_attn_checks = {str(ac["in_task"]): ac for ac in ATTENTION_CHECKS if ac.get("in_task") is not None}
     return {
         "questions": get_profiling_questions_with_attention_checks(),
         "eval_attention_checks": eval_attn_checks,
@@ -319,7 +326,7 @@ def get_evaluation_items():
 
 
 @app.post("/api/session/create")
-def create_session():
+def create_session(request: CreateSessionRequest = CreateSessionRequest()):
     """Create a new participant session and claim a schedule."""
     schedule_id, schedule = claim_next_schedule()
     session_id = f"s_{int(time.time()*1000)}_{random.randint(1000,9999)}"
@@ -330,8 +337,8 @@ def create_session():
 
     with get_db() as conn:
         conn.execute(
-            "INSERT INTO sessions (session_id, schedule_id, created_at, task_order) VALUES (?, ?, ?, ?)",
-            (session_id, schedule_id, datetime.utcnow().isoformat(), json.dumps(task_order)),
+            "INSERT INTO sessions (session_id, schedule_id, created_at, task_order, prolific_pid) VALUES (?, ?, ?, ?, ?)",
+            (session_id, schedule_id, datetime.utcnow().isoformat(), json.dumps(task_order), request.prolific_pid),
         )
 
     return {
@@ -339,6 +346,7 @@ def create_session():
         "schedule_id": schedule_id,
         "num_questions": len(PROFILING_QUESTIONS),
         "num_tasks": len(TASKS),
+        "prolific_redirect_url": PROLIFIC_REDIRECT_URL,
     }
 
 
@@ -364,7 +372,6 @@ def submit_profiling(submission: ProfilingSubmission):
         )
 
         # Check and store profiling attention check results
-        attention_check_ids = {ac["id"] for ac in ATTENTION_CHECKS if ac.get("insert_after")}
         for ac in ATTENTION_CHECKS:
             if ac.get("insert_after") and ac["id"] in submission.answers:
                 actual = submission.answers[ac["id"]]
@@ -439,8 +446,8 @@ def submit_evaluation(submission: EvaluationSubmission):
     with get_db() as conn:
         conn.execute(
             """INSERT INTO evaluations
-               (session_id, task_id, eval_tone, eval_verbosity, eval_structure, eval_initiative, eval_overall, open_ended, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               (session_id, task_id, eval_tone, eval_verbosity, eval_structure, eval_initiative, eval_overall, eval_relevance, open_ended, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 submission.session_id,
                 submission.task_id,
@@ -449,6 +456,7 @@ def submit_evaluation(submission: EvaluationSubmission):
                 submission.eval_structure,
                 submission.eval_initiative,
                 submission.eval_overall,
+                submission.eval_relevance,
                 submission.open_ended,
                 datetime.utcnow().isoformat(),
             ),
@@ -497,4 +505,19 @@ def export_data():
         "attention_checks": attention_checks,
         "questions": PROFILING_QUESTIONS,
         "tasks": TASKS,
+    }
+
+
+@app.get("/api/admin/status")
+def study_status():
+    """Quick status check for monitoring data collection."""
+    with get_db() as conn:
+        total = conn.execute("SELECT COUNT(*) FROM sessions").fetchone()[0]
+        complete = conn.execute("SELECT COUNT(*) FROM sessions WHERE status='complete'").fetchone()[0]
+        claimed = conn.execute("SELECT COUNT(*) FROM schedule_claims WHERE claimed=1").fetchone()[0]
+    return {
+        "total_sessions": total,
+        "complete": complete,
+        "schedules_claimed": claimed,
+        "schedules_remaining": 200 - claimed,
     }

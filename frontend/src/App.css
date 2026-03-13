@@ -11,8 +11,8 @@
   --accent-light: #e8f0e6;
   --accent-hover: #3d7a35;
   --border: #e0ddd6;
-  --selected: #2d5a27;
-  --selected-bg: #e8f0e6;
+  --selected: #3a5a8c;
+  --selected-bg: #e6edf5;
   --error: #c44;
   --radius: 8px;
   --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
@@ -216,6 +216,17 @@ h3 {
   margin-bottom: 1.5rem;
 }
 
+.tier-instructions {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: #f5f3ee;
+  border-radius: var(--radius);
+  border-left: 3px solid var(--accent);
+}
+
 /* ── Questions ─────────────────────────────────────────────────────────── */
 
 .questions-list {
@@ -255,6 +266,138 @@ h3 {
   padding: 0.75rem 1rem;
   border-radius: var(--radius);
   margin-bottom: 1rem;
+}
+
+/* ── Bipolar Pole Cards ────────────────────────────────────────── */
+
+.bipolar-poles {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.pole {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.pole-left {
+  justify-content: flex-start;
+  border-left: 3px solid #6b7d94;
+}
+
+.pole-right {
+  justify-content: flex-end;
+  text-align: right;
+  border-right: 3px solid #6b7d94;
+}
+
+.pole-active.pole-left {
+  background: #eef1f5;
+  border-color: #6b7d94;
+}
+
+.pole-active.pole-right {
+  background: #eef1f5;
+  border-color: #6b7d94;
+}
+
+.pole-arrow {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.pole-left .pole-arrow { color: #6b7d94; }
+.pole-right .pole-arrow { color: #6b7d94; }
+
+.pole-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.bipolar-scale {
+  display: flex;
+  justify-content: center;
+}
+
+.bipolar-scale .likert-buttons {
+  display: flex;
+  gap: 0.35rem;
+}
+
+/* ── Forced Choice: Versus Cards ───────────────────────────────── */
+
+.choice-versus {
+  display: flex;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.choice-card {
+  flex: 1;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  background: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.choice-card:hover {
+  border-color: var(--accent);
+  background: #fafaf7;
+  transform: translateY(-1px);
+}
+
+.choice-card.selected {
+  border-color: var(--selected);
+  background: var(--selected-bg);
+  font-weight: 500;
+  box-shadow: 0 0 0 1px var(--selected);
+}
+
+.choice-or {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .bipolar-poles {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .choice-versus {
+    flex-direction: column;
+  }
+  .choice-or {
+    padding: 0.25rem 0;
+  }
 }
 
 .q-hint {
@@ -512,7 +655,32 @@ h3 {
 .response-text {
   font-size: 0.95rem;
   line-height: 1.7;
-  white-space: pre-wrap;
+}
+
+.response-text h1, .response-text h2, .response-text h3 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  margin: 1rem 0 0.5rem;
+}
+
+.response-text h1 { font-size: 1.2rem; }
+.response-text h2 { font-size: 1.1rem; }
+.response-text h3 { font-size: 1rem; }
+
+.response-text p {
+  margin-bottom: 0.75rem;
+}
+
+.response-text ul {
+  margin: 0.5rem 0 0.75rem 1.25rem;
+  padding: 0;
+}
+
+.response-text li {
+  margin-bottom: 0.35rem;
+}
+
+.response-text strong {
+  font-weight: 600;
 }
 
 /* ── Evaluation Items ──────────────────────────────────────────────────── */
